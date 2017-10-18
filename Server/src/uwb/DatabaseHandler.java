@@ -20,6 +20,34 @@ public class DatabaseHandler {
 		}
 	}
 	
+	public PreparedStatement createStatement(String sql, int[] fields){
+		PreparedStatement prest = null;
+		try {
+			if(conn.isClosed()||conn==null){
+				connect();
+			}
+			prest = conn.preparedStatement(sql);
+			for(int i=0; i<fields.length;i++){
+				prest.setInt(i+1, fields[i]);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();	
+		}
+		return prest;
+	}
+	
+	public ResultSet executeQuery(String sql, int[] fields)
+	{
+		ResultSet rs = null; 
+		try {
+			rs = createStatement(sql, fields).executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	/*
 	public PreparedStatement createStatement(String sql, String[] fields){
 		PreparedStatement prest = null;
 		try {
@@ -46,7 +74,7 @@ public class DatabaseHandler {
 		}
 		return rs;
 	}
-	/*
+	
 	public ResultSet executeUpdateLocaiton(int tagID, int x, int y){
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -82,33 +110,7 @@ public class DatabaseHandler {
 		return true;
 	}
 	*/
-	
-	public boolean updateLocation(int id, int x, int y){
-		PreparedStatement pstmt = null;
-		String sql="update tag set x=?, y=? where id=?;";
-		try{
-			if(conn.isClosed()||conn==null){
-				connect();
-			}
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, x);
-			pstmt.setInt(2, y);
-			pstmt.setInt(3, id);
-			pstmt.executeUpdate();
-		} catch(Exception e){
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean updateTagLog(int id, int x, int y){
-		PreparedStatement pstmt = null;
-		String sql = "insert into ? values(x, y, time) ";
-		
-		return true;
-	}
-	public int executeUpdate(String sql, String[] val){
+	public int executeUpdate(String sql, int[] val){
 		int res = 0;
 		try {
 			res = createStatement(sql, val).executeUpdate();
